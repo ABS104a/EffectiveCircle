@@ -3,6 +3,7 @@ package com.abs104a.effectivecircle.surface_view;
 import java.util.ArrayList;
 
 import com.abs104a.effectivecircle.objects.Circle;
+import com.abs104a.effectivecircle.objects.CircleController;
 
 import android.graphics.Canvas;
 import android.graphics.Paint;
@@ -23,7 +24,7 @@ public class CircleHolderCallBack implements SurfaceHolder.Callback, Runnable{
 	
 	private final int CIRCLE_COUNT = 50;
 	
-	private ArrayList<Circle> circleList = new ArrayList<Circle>();
+	
 	
 	@Override
 	public void run() {
@@ -31,11 +32,14 @@ public class CircleHolderCallBack implements SurfaceHolder.Callback, Runnable{
 		 while( isAttached ){
 			 //描画処理を開始
 			 Canvas canvas = holder.lockCanvas();
+			 //キャンバスがNullの時（アプリ終了時など）は何もしない
+			 if(canvas == null)return;
+			 
 			 Paint paint = new Paint();
 			 canvas.drawColor(0,PorterDuff.Mode.CLEAR );
 			 
-			 for(Circle c : circleList)
-				 Circle.moveCircle(this.width, this.height, c,canvas,paint);
+			 for(Circle c : CircleController.getCircleList())
+				 CircleController.moveCircle(this.width, this.height, c,canvas,paint);
 			 
 			//描画処理を終了
 			 holder.unlockCanvasAndPost(canvas);
@@ -46,9 +50,10 @@ public class CircleHolderCallBack implements SurfaceHolder.Callback, Runnable{
 	public void surfaceCreated(SurfaceHolder holder) {
 		this.holder = holder;
 		
+		ArrayList<Circle> mCircleList = CircleController.getCircleList();
 		//円を作成する。
 		for(int i = 0;i < CIRCLE_COUNT;i++)
-			circleList.add(new Circle(this.width, this.height));
+			mCircleList.add(new Circle(600, 700));
 		
 		thread = new Thread(this);
 		thread.start(); //スレッドを開始
